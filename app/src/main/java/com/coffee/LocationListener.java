@@ -7,7 +7,7 @@ public class LocationListener implements android.location.LocationListener {
     public static Location location;
     @Override
     public void onLocationChanged(Location location) {
-     this.location = location;
+        this.location = location;
     }
 
     @Override

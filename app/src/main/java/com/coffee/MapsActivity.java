@@ -80,24 +80,24 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 1 , myLoc);
-MyThread MyT= new MyThread();
-MyT.start();
+        MyThread MyT= new MyThread();
+        MyT.start();
     }
     class MyThread extends Thread{
         public void run(){
             while(true){
 
-               runOnUiThread(new Runnable(){
-                   @Override
-                   public void run() {
-                       mMap.clear();
-                       if (LocationListener.location != null) {
-                           LatLng Loc = new LatLng(LocationListener.location.getLatitude(), LocationListener.location.getLongitude());
-                           mMap.addMarker(new MarkerOptions().position(Loc).title("Locatia ta"));
+                runOnUiThread(new Runnable(){
+                    @Override
+                    public void run() {
+                        mMap.clear();
+                        if (LocationListener.location != null) {
+                            LatLng Loc = new LatLng(LocationListener.location.getLatitude(), LocationListener.location.getLongitude());
+                            mMap.addMarker(new MarkerOptions().position(Loc).title("Locatia ta"));
 
-                       }
-                   }
-               });
+                        }
+                    }
+                });
 
                 try {
                     Thread.sleep(1000);
