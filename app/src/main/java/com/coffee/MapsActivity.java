@@ -37,7 +37,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         CheckUserPermsions();
     }
 
-    //access to permsions
+    //access to permissions
     void CheckUserPermsions(){
         if ( Build.VERSION.SDK_INT >= 23){
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION) !=
@@ -52,7 +52,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         runlistener();// init the contact list
 
     }
-    //get acces to location permsion
+    //get access to user permission
     final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
 
 
@@ -65,7 +65,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     runlistener();// init the contact list
                 } else {
                     // Permission Denied
-                    Toast.makeText( this,"Voi plange" , Toast.LENGTH_SHORT)
+                    Toast.makeText( this,"No can do" , Toast.LENGTH_SHORT)
                             .show();
                 }
                 break;
@@ -93,7 +93,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         mMap.clear();
                         if (LocationListener.location != null) {
                             LatLng Loc = new LatLng(LocationListener.location.getLatitude(), LocationListener.location.getLongitude());
-                            mMap.addMarker(new MarkerOptions().position(Loc).title("Locatia ta"));
+                            mMap.addMarker(new MarkerOptions().position(Loc).title("Your Location"));
 
                         }
                     }
@@ -130,10 +130,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             this, R.raw.stil ));
 
             if (!success) {
-                Log.e("ceva", "Style parsing failed.");
+                Log.e("Something", "Style parsing failed.");
             }
         } catch (Resources.NotFoundException e) {
-            Log.e("ceva", "Can't find style. Error: ", e);
+            Log.e("Something", "Can't find style. Error: ", e);
         }
 
 
