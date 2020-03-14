@@ -48,20 +48,23 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         if (googleMap != null) {
 
 
-           googleMap.clear();
+            googleMap.clear();
 
            //Marker is initialized
             if (LocationListener.location != null) {
                 LatLng Loc = new LatLng(LocationListener.location.getLatitude(), LocationListener.location.getLongitude());
-                LocationListener myLoc = new LocationListener();
-                LocationManager lm = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService(Context.LOCATION_SERVICE);
 
 
-                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1, 3 , myLoc);
+
+                runlistener();
                 Marker marker =
                         googleMap.addMarker(new MarkerOptions().position(Loc).title("Your Location")
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
                         .draggable(false).visible(true));
+
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(Loc).zoom(15).build();
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
 
         }
@@ -81,31 +84,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-
-        /*
-        // create marker
-        MarkerOptions marker = new MarkerOptions().position(
-                new LatLng(latitude, longitude)).title("Hello Maps");
-
-        // Changing marker icon
-        marker.icon(BitmapDescriptorFactory
-                .defaultMarker(BitmapDescriptorFactory.HUE_ROSE));*/
-
-        // adding marker
-
-        /*googleMap.addMarker(marker);
-        CameraPosition cameraPosition = new CameraPosition.Builder()
-                .target(new LatLng(17.385044, 78.486671)).zoom(12).build();
-        googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));*/
-
+        runlistener();
         mMapView.getMapAsync(this);
+
         CheckUserPermsions();
-         //latitude and longitude
 
-
-
-        // Perform any camera updates here
         return v;
 
     }
@@ -152,16 +135,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         LocationManager lm = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService(Context.LOCATION_SERVICE);
 
 
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5, 3 , myLoc);
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3, 3 , myLoc);
 
     }
-
-
-
-
-
-
-
     @Override
     public void onResume() {
         super.onResume();
