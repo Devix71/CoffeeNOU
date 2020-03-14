@@ -62,10 +62,28 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
                         .draggable(false).visible(true));
 
-                CameraPosition cameraPosition = new CameraPosition.Builder()
+                /*CameraPosition cameraPosition = new CameraPosition.Builder()
                         .target(Loc).zoom(15).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));*/
             }
+             final LatLng MELBOURNE = new LatLng(-37.813, 144.962);
+            Marker melbourne = googleMap.addMarker(new MarkerOptions()
+                    .position(MELBOURNE)
+                    .title("ceva in plus")
+                    .snippet("3 stele")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+
+             final LatLng ELBOURNE = new LatLng(-3.813, 14.962);
+            Marker elbourne = googleMap.addMarker(new MarkerOptions()
+                    .position(ELBOURNE)
+                    .title("Altceva")
+                    .snippet("2 stele")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ROSE)));
+            final LatLng BOURNE = new LatLng(-9.813, 54.962);
+            Marker bourne = googleMap.addMarker(new MarkerOptions()
+                    .position(BOURNE)
+                    .title("ceva").snippet("o stea")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
 
         }
     }
