@@ -39,8 +39,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
 
     MapView mMapView;
-    GoogleMap googleMap ;
-
 
 
     @SuppressLint("MissingPermission")
@@ -52,7 +50,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
            googleMap.clear();
 
-           //aici bagi markeru
+           //Marker is initialized
             if (LocationListener.location != null) {
                 LatLng Loc = new LatLng(LocationListener.location.getLatitude(), LocationListener.location.getLongitude());
                 LocationListener myLoc = new LocationListener();
@@ -85,8 +83,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
         }
 
 
-        /*double latitude = 17.385044;
-        double longitude = 78.486671;
+        /*
         // create marker
         MarkerOptions marker = new MarkerOptions().position(
                 new LatLng(latitude, longitude)).title("Hello Maps");
@@ -156,34 +153,9 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
 
         lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 5, 3 , myLoc);
-        /*MyThread MyT= new MyThread();
-        MyT.start();*/
+
     }
-    public class MyThread extends Thread{
-        public void run(){
-            /*while(true){
 
-                Objects.requireNonNull(getActivity()).runOnUiThread(new Runnable(){
-                    @Override
-                    public void run() {
-                        googleMap.clear();
-                        if (LocationListener.location != null) {
-                            LatLng Loc = new LatLng(LocationListener.location.getLatitude(), LocationListener.location.getLongitude());
-                            googleMap.addMarker(new MarkerOptions().position(Loc).title("Your Location"));
-
-                        }
-                    }
-                });
-
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-            }*/
-        }
-    }
 
 
 
