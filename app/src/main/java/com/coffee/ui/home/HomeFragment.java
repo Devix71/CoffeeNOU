@@ -1,5 +1,6 @@
 package com.coffee.ui.home;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
@@ -46,34 +47,35 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
 
         if (googleMap != null) {
-
-
+            CheckUserPermsions();
+            runlistener();// init the contact list
             googleMap.clear();
 
-           //Marker is initialized
+            //Marker is initialized
             if (LocationListener.location != null) {
-                LatLng Loc = new LatLng(LocationListener.location.getLatitude(), LocationListener.location.getLongitude());
+                LatLng Log = new LatLng(LocationListener.location.getLatitude(), LocationListener.location.getLongitude());
+                LocationListener Loc = new LocationListener();
+                LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
+                lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, Loc);
 
 
-
-                runlistener();
                 Marker marker =
-                        googleMap.addMarker(new MarkerOptions().position(Loc).title("Your Location")
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
-                        .draggable(false).visible(true));
+                        googleMap.addMarker(new MarkerOptions().position(Log).title("Your Location")
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN))
+                                .draggable(false).visible(true));
 
-                /*CameraPosition cameraPosition = new CameraPosition.Builder()
-                        .target(Loc).zoom(15).build();
-                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));*/
+                CameraPosition cameraPosition = new CameraPosition.Builder()
+                        .target(Log).zoom(15).build();
+                googleMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
             }
-             final LatLng MELBOURNE = new LatLng(-37.813, 144.962);
+            final LatLng MELBOURNE = new LatLng(-37.813, 144.962);
             Marker melbourne = googleMap.addMarker(new MarkerOptions()
                     .position(MELBOURNE)
                     .title("ceva in plus")
                     .snippet("3 stele")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
 
-             final LatLng ELBOURNE = new LatLng(-3.813, 14.962);
+            final LatLng ELBOURNE = new LatLng(-3.813, 14.962);
             Marker elbourne = googleMap.addMarker(new MarkerOptions()
                     .position(ELBOURNE)
                     .title("Altceva")
@@ -85,8 +87,10 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     .title("ceva").snippet("o stea")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_ORANGE)));
 
+
         }
     }
+
     @SuppressLint("WrongViewCast")
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -111,24 +115,21 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
 
     }
 
+
     //access to permissions
-    public void CheckUserPermsions(){
-        if ( Build.VERSION.SDK_INT >= 23){
+    public void CheckUserPermsions() {
+        if (Build.VERSION.SDK_INT >= 23) {
             if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(HomeFragment.this.getContext()), android.Manifest.permission.ACCESS_FINE_LOCATION) !=
-                    PackageManager.PERMISSION_GRANTED  ){
+                    PackageManager.PERMISSION_GRANTED) {
                 requestPermissions(new String[]{
                                 android.Manifest.permission.ACCESS_FINE_LOCATION},
                         REQUEST_CODE_ASK_PERMISSIONS);
-                return ;
+                return;
             }
         }
-
-        runlistener();// init the contact list
-
     }
     //get access to user permission
     final private int REQUEST_CODE_ASK_PERMISSIONS = 123;
-
 
 
     @Override
@@ -139,7 +140,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                     runlistener();// init the contact list
                 } else {
                     // Permission Denied
-                    Toast.makeText( HomeFragment.this.getContext(),"No can do" , Toast.LENGTH_SHORT)
+                    Toast.makeText(HomeFragment.this.getContext(), "No, I don't think I will", Toast.LENGTH_SHORT)
                             .show();
                 }
                 break;
@@ -147,13 +148,28 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback {
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
-    @SuppressLint("MissingPermission")
+
     void runlistener() {
         LocationListener myLoc = new LocationListener();
-        LocationManager lm = (LocationManager) Objects.requireNonNull(getActivity()).getSystemService(Context.LOCATION_SERVICE);
+        LocationManager lm = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
 
 
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 3, 3 , myLoc);
+        if (ActivityCompat.checkSelfPermission(HomeFragment.this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(HomeFragment.this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED&&ActivityCompat.checkSelfPermission(HomeFragment.this.getContext(), Manifest.permission.ACCESS_BACKGROUND_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+           
+           if (ActivityCompat.checkSelfPermission(Objects.requireNonNull(HomeFragment.this.getContext()), android.Manifest.permission.ACCESS_FINE_LOCATION) !=
+                               PackageManager.PERMISSION_GRANTED) {
+                            requestPermissions(new String[]{
+                                            Manifest.permission.ACCESS_BACKGROUND_LOCATION,
+                                            android.Manifest.permission.ACCESS_COARSE_LOCATION,
+                                            android.Manifest.permission.ACCESS_FINE_LOCATION},
+                                  REQUEST_CODE_ASK_PERMISSIONS);
+
+                            return;
+                        }
+
+        }
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, myLoc);
+        Toast.makeText(HomeFragment.this.getContext(), "location not null" , Toast.LENGTH_SHORT).show();
 
     }
     @Override
