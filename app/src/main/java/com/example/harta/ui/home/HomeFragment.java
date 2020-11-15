@@ -319,7 +319,6 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         });
         return view;
     }
-
     public void ListenerForSingeAndMGR() {
         if (ActivityCompat.checkSelfPermission(HomeFragment.this.requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
@@ -579,9 +578,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
             z.post(() -> {
                 while (MainActivity.currentLocation2.getLongitude() != MainActivity.currentLocation1.getLongitude() || MainActivity.currentLocation2.getLatitude() != MainActivity.currentLocation1.getLatitude()) {
 
-                    Log.e("MERGE LOCATIA", "MERG MARKERELE");
-                    Log.e("MERGE LOCATIA", "locatie init" + MainActivity.currentLocation1.getLatitude());
-                    Log.e("MERGE LOCATIA", "locatie update" + MainActivity.currentLocation2.getLatitude());
+
 
                     if ((MainActivity.currentLocation2.getLatitude() < MainActivity.currentLocation1.getLatitude() + 0.001 || MainActivity.currentLocation2.getLatitude() > MainActivity.currentLocation1.getLatitude() - 0.001) ||
                             (MainActivity.currentLocation2.getLongitude() < MainActivity.currentLocation1.getLongitude() + 0.001 || MainActivity.currentLocation2.getLongitude() > MainActivity.currentLocation1.getLongitude() - 0.001)) {
@@ -593,9 +590,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                         MainActivity.currentLocation1 = MainActivity.currentLocation2;
                         if (!json) {
                             databaseCafea.addListenerForSingleValueEvent(valueEventListener);
-                        } else {
-                            read_file(HomeFragment.this.requireContext(), fileName, cache);
-
+                        } else if(!cache.isEmpty()) {
                             for (Cafenea cafenea : cache) {
                                 if (MainActivity.currentLocation1 != null && cafenea.getLatitude() <= MainActivity.currentLocation1.getLatitude() + 0.007 && cafenea.getLatitude() >= MainActivity.currentLocation1.getLatitude() - 0.007) {
                                     if (cafenea.getLongitude() <= MainActivity.currentLocation1.getLongitude() + 0.007 && cafenea.getLongitude() >= MainActivity.currentLocation1.getLongitude() - 0.007) {
@@ -613,13 +608,11 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
                         }
                     }
-
-
-                    try {
-                        Thread.sleep(100);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                }
+                try {
+                    Thread.sleep(50);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             });
 
@@ -684,7 +677,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
 
 
                 try {
-                    if (!MainActivity.smth.equals(getCityNames(googleMap.getCameraPosition().target.latitude, googleMap.getCameraPosition().target.longitude)) && tempchunk.isEmpty() && googleMap.getCameraPosition().zoom > 11 && getCityNames(googleMap.getCameraPosition().target.latitude, googleMap.getCameraPosition().target.longitude) != null) {
+                    if (!getCityNames(cache.get(0).getLatitude(), cache.get(0).getLongitude()).equals(getCityNames(googleMap.getCameraPosition().target.latitude, googleMap.getCameraPosition().target.longitude)) && tempchunk.isEmpty() && googleMap.getCameraPosition().zoom > 11 && getCityNames(googleMap.getCameraPosition().target.latitude, googleMap.getCameraPosition().target.longitude) != null) {
                         if (googleMap.getCameraPosition().zoom < 16.0) {
                             Log.e("ZOOM", "din baza de date");
 
@@ -703,7 +696,8 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                 if (googleMap.getCameraPosition().zoom > 16.0 && chunk.isEmpty()) {
 
                     try {
-                        if (!MainActivity.smth.equals(getCityNames(googleMap.getCameraPosition().target.latitude, googleMap.getCameraPosition().target.longitude))) {
+                        if (!getCityNames(cache.get(0).getLatitude(), cache.get(0).getLongitude()).equals(getCityNames(googleMap.getCameraPosition().target.latitude, googleMap.getCameraPosition().target.longitude))) {
+                            Log.e("debug","a luat ala gresitu");
                             for (Cafenea cafenea : tempchunk) {
                                 chunk.add(googleMap.addMarker(new MarkerOptions()
                                         .position(new LatLng(cafenea.getLatitude(), cafenea.getLongitude()))
@@ -1176,24 +1170,24 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
             return convertView;
         }
     }
-public void InfoPanel(Marker marker) throws IOException {
-    mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
-    LinkedList<Cafenea> info = new LinkedList<>();
-    if (cache.isEmpty()) {
-        verificareJson();
-        read_file(HomeFragment.this.requireContext(), fileName, cache);
-    }
-    for (Cafenea cafenea1 : cache) {
-        if (marker.getPosition().latitude == cafenea1.getLatitude() && marker.getPosition().longitude == cafenea1.getLongitude()) {
-            info.add(cafenea1);
-            Log.e("PIZZAaasd", "RRRRRRRR" + marker.getTitle());
-            break;
+    public void InfoPanel(Marker marker) throws IOException {
+        mBottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        LinkedList<Cafenea> info = new LinkedList<>();
+        if (cache.isEmpty()) {
+            verificareJson();
+            read_file(HomeFragment.this.requireContext(), fileName, cache);
         }
-    }
-    UsersAdapter2  adapter = new UsersAdapter2(HomeFragment.this.requireContext(), info);
-    infoP.setAdapter(adapter);
+        for (Cafenea cafenea1 : cache) {
+            if (marker.getPosition().latitude == cafenea1.getLatitude() && marker.getPosition().longitude == cafenea1.getLongitude()) {
+                info.add(cafenea1);
+                Log.e("PIZZAaasd", "RRRRRRRR" + marker.getTitle());
+                break;
+            }
+        }
+        UsersAdapter2  adapter = new UsersAdapter2(HomeFragment.this.requireContext(), info);
+        infoP.setAdapter(adapter);
 
-}
+    }
 
     //Format afisare rezultate cautare
     public class UsersAdapter2 extends ArrayAdapter<Cafenea> {
@@ -1325,7 +1319,6 @@ public void InfoPanel(Marker marker) throws IOException {
         .icon(BitmapDescriptorFactory.defaultMarker
         (BitmapDescriptorFactory.HUE_AZURE))));
         }
-
         }
         } else if (cache.size() > chunk.size() && chunk.size() != 0) {
        /* for (int y = 0; y < cache.size(); y++) {
@@ -1335,7 +1328,6 @@ public void InfoPanel(Marker marker) throws IOException {
         cache.get(y).setTitle(chunk.get(y).getName());
         cache.get(y).setSnippet(chunk.get(y).getAddress());
         }
-
         } else {
         cache.get(y).remove();
         }
@@ -1350,7 +1342,6 @@ public void InfoPanel(Marker marker) throws IOException {
         .icon(BitmapDescriptorFactory.defaultMarker
         (BitmapDescriptorFactory.HUE_AZURE))));
         }
-
         }
         if (!chunk.isEmpty()) {
         chunk.clear();
@@ -1366,9 +1357,5 @@ public void InfoPanel(Marker marker) throws IOException {
         new Thread(map).start();
         }
         */
-
-
-
-
 
 
