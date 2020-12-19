@@ -13,6 +13,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -25,6 +26,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.harta.ui.home.HomeFragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.Task;
@@ -57,6 +59,9 @@ public class MainActivity extends AppCompatActivity implements android.location.
     public static Location currentLocation1;
     public static boolean json1;
     public static boolean fisier1;
+    public static boolean jsonFav;
+    public static boolean fisierFav;
+    public static String fileName1 = "Favorite";
     public boolean json;
     public boolean fisier;
     public ArrayList<Detalii> detaliu = new ArrayList<>();
@@ -122,7 +127,20 @@ public class MainActivity extends AppCompatActivity implements android.location.
         myCity = addresses.get(0).getLocality();
         return myCity;
     }
-
+   public void verificareFavs() throws IOException {
+        FileInputStream fis = this.openFileInput(fileName1);
+        InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
+        BufferedReader bufferedReader = new BufferedReader(isr);
+        File file = this.getFileStreamPath(fileName1);
+        if (file.exists()) {
+            fisierFav = true;
+        }
+        if (bufferedReader.readLine() != null) {
+            jsonFav = true;
+        }
+        Log.e("Fisier Exista", "" + fisierFav);
+        Log.e("Fisier e scris", "" + jsonFav);
+    }
     public void ScriereD(String fileName) {
         databaseDetalii.addListenerForSingleValueEvent(DetaliiEventListener);
         final Handler handler = new Handler();
@@ -244,7 +262,7 @@ public class MainActivity extends AppCompatActivity implements android.location.
         //Log.e("Detalii Exista", "" + fisier);
         //Log.e("Detalii e scris", "" + json);
     }
-
+    public static DrawerLayout drawer;
 
 
     @SuppressLint("NewApi")
@@ -257,6 +275,7 @@ public class MainActivity extends AppCompatActivity implements android.location.
         try {
             verificareJson();
             verificareJsonD();
+            verificareFavs();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -305,11 +324,10 @@ public class MainActivity extends AppCompatActivity implements android.location.
             }
         }, delay);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        NavigationView navigationView = findViewById(R.id.nav_view);
 
+
+      drawer = findViewById(R.id.drawer_layout);
+        NavigationView navigationView = findViewById(R.id.nav_view);
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
 
@@ -319,7 +337,6 @@ public class MainActivity extends AppCompatActivity implements android.location.
                 .setOpenableLayout(drawer)
                 .build();
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
-        NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
 
 
