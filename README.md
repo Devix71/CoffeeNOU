@@ -1,2 +1,1 @@
-MapLoc reprezinta o mini-aplicatie creata intr-un nou proiect (drawer-app).
-In aceasta versiune ea contine doar un fragment functional ce contine GoogleMaps + Locatia ta live + un buton ce te va duce cu zoom la locatia ta.
+CoffeeTime is an app designed to help discover Bucharest's coffeeshops. Right now the app has location aware points of interest display, real time location tracking and features the ability of saving your favourite coffeshops for later viewing. The app's functionality is still limited, as I intend to add a more detailed summary screen and an overhaul regarding its visual design.
