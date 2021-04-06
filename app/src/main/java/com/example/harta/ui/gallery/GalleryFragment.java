@@ -6,6 +6,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -27,9 +29,13 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 
 public class GalleryFragment extends Fragment {
+    static ArrayList<Cafenea> rezultat;
+    public MyAdapter adapter;
     ViewPager2 viewPager;
+    SearchView searchFave;
     static public ArrayList<Cafenea> FavCache;
-    public void read_file(@NonNull Context context, String filename, ArrayList<Cafenea> cache) {
+
+    static public void read_file(@NonNull Context context, String filename, ArrayList<Cafenea> cache) {
         try {
             FileInputStream fis = context.openFileInput(filename);
             InputStreamReader isr = new InputStreamReader(fis, StandardCharsets.UTF_8);
@@ -56,14 +62,15 @@ public class GalleryFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_gallery, container, false);
+        searchFave = view.findViewById(R.id.FaveSearch);
         FavCache = new ArrayList<>();
         viewPager = view.findViewById(R.id.pager);
         tabLayout = view.findViewById(R.id.tabLayout);
         tabLayout.addTab(tabLayout.newTab().setText("Home"));
-        tabLayout.addTab(tabLayout.newTab().setText("Sport"));
+        tabLayout.addTab(tabLayout.newTab().setText("Colectii"));
 
         tabLayout.setTabGravity(TabLayout.GRAVITY_FILL);
-        final MyAdapter adapter = new MyAdapter(GalleryFragment.this.requireContext(),getActivity(), tabLayout.getTabCount());
+        adapter = new MyAdapter(GalleryFragment.this.requireContext(), getActivity(), tabLayout.getTabCount());
 
         viewPager.setAdapter(adapter);
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
@@ -83,9 +90,49 @@ public class GalleryFragment extends Fragment {
 
             }
         });
-        read_file(GalleryFragment.this.requireContext(), MainActivity.fileName1,FavCache);
+        read_file(GalleryFragment.this.requireContext(), MainActivity.fileName1, FavCache);
+        SetOnQuery();
         return view;
     }
 
+    public void SetOnQuery() {
+        searchFave.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+
+                rezultat = new ArrayList<>();
+                if (MainActivity.jsonFav) {
+                    Favesearch(query, FavCache);
+                } else {
+                    Toast.makeText(GalleryFragment.this.requireContext(), "There's nothing here", Toast.LENGTH_SHORT).show();
+                }
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+    }
+
+    public void Favesearch(final String searchText, ArrayList<Cafenea> FavCache) {
+
+
+        for (Cafenea caf : FavCache) {
+
+            if (caf.getName().toLowerCase().contains(searchText.toLowerCase())) {
+                rezultat.add(caf);
+            }
+
+
+        }
+        if (rezultat.isEmpty()) {
+            Toast.makeText(GalleryFragment.this.requireContext(), "It doesn't exist", Toast.LENGTH_SHORT).show();
+        }
+        Log.e("rezFav", rezultat.get(0).getName());
+        adapter = new MyAdapter(GalleryFragment.this.requireContext(), getActivity(), tabLayout.getTabCount());
+        viewPager.setAdapter(adapter);
+    }
 
 }

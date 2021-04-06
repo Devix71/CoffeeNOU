@@ -30,9 +30,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
@@ -44,6 +42,7 @@ import com.example.harta.Detalii;
 import com.example.harta.MainActivity;
 import com.example.harta.MapStateManager;
 import com.example.harta.R;
+import com.example.harta.ui.gallery.GalleryFragment;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -168,14 +167,14 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                 writer.name("Cafenele").beginArray();
 
 
-                    writer.beginObject(); //{
+                writer.beginObject(); //{
 
-                    writer.name("Address").value(cafea.getAddress()); // "id": 123
-                    writer.name("Latitude").value(cafea.getLatitude()); // "name": "David"
-                    writer.name("Longitude").value(cafea.getLongitude()); // "permanent": false
-                    writer.name("id").value(cafea.getId());
-                    writer.name("name").value(cafea.getName());// "address": {
-                    writer.endObject(); // }
+                writer.name("Address").value(cafea.getAddress()); // "id": 123
+                writer.name("Latitude").value(cafea.getLatitude()); // "name": "David"
+                writer.name("Longitude").value(cafea.getLongitude()); // "permanent": false
+                writer.name("id").value(cafea.getId());
+                writer.name("name").value(cafea.getName());// "address": {
+                writer.endObject(); // }
 
                 writer.endArray(); // ]
                 writer.endObject(); // }
@@ -1182,6 +1181,7 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
     public class UsersAdapter extends ArrayAdapter<Cafenea> {
         @RequiresApi(api = Build.VERSION_CODES.O)
         void json(TextView user_name, TextView adress){
+
             for (Cafenea cafenea : rezultat) {
                 if (user_name.getText().equals(cafenea.getName()) && adress.getText().equals(cafenea.getAddress())) {
                     if(!MainActivity.fisierFav){
@@ -1200,57 +1200,46 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
-                    }else{
-                        Log.e("aaaaaaaaaaa","scriere prin adaugare");
+                    }else {
+                        GalleryFragment.read_file(HomeFragment.this.requireContext(), MainActivity.fileName1, GalleryFragment.FavCache);
+                        for (Cafenea cafenea1 : GalleryFragment.FavCache) {
+                            if (!user_name.getText().equals(cafenea1.getName()) && !adress.getText().equals(cafenea1.getAddress())) {
+                                Log.e("aaaaaaaaaaa", "scriere prin adaugare");
 
-                        Path path = Paths.get(HomeFragment.this.requireContext().getFilesDir() +"/"+MainActivity.fileName1);
-                        List<String> lines = null;
-                        try {
-                            lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-                        } catch (IOException e) {
-                            e.printStackTrace();
+                                Path path = Paths.get(HomeFragment.this.requireContext().getFilesDir() + "/" + MainActivity.fileName1);
+                                List<String> extraLine = null;
+                                List<Integer> position = null;
+                                List<String> lines = null;
+                                try {
+                                    lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                for (int i = 1; i < 8; i++) {
+                                    position.add(lines.size() - 3 + i);
+                                }
+
+                                extraLine.add("		,");
+                                extraLine.add("		{");
+                                extraLine.add("			" + '"' + "Address" + '"' + ": " + '"' + cafenea.getAddress() + '"' + ",");
+                                extraLine.add("			" + '"' + "Latitude" + '"' + ": " + cafenea.getLatitude() + ",");
+                                extraLine.add("			" + '"' + "Longitude" + '"' + ": " + cafenea.getLongitude() + ",");
+                                extraLine.add("			" + '"' + "id" + '"' + ": " + '"' + cafenea.getId() + '"' + ",");
+                                extraLine.add("			" + '"' + "name" + '"' + ": " + '"' + cafenea.getName() + '"');
+                                extraLine.add("		}");
+
+                                for (int i = 1; i < 8; i++) {
+                                    lines.add(position.get(i), extraLine.get(i));
+                                }
+
+                                try {
+                                    Files.write(path, lines, StandardCharsets.UTF_8);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
                         }
-                        int position1 = lines.size()-2;
-                        int position2 = lines.size()-1;
-                        int position3 = lines.size();
-                        int position4 = lines.size()+1;
-                        int position5 = lines.size()+2;
-                        int position6 = lines.size()+3;
-                        int position7 = lines.size()+4;
-                        int position8 = lines.size()+5;
 
-
-
-
-
-                        String extraLine = "		,";
-                        String extraLine2 ="		{";
-                        String extraLine3 ="			"+'"'+"Address"+'"'+": "+'"'+cafenea.getAddress()+'"'+",";
-                        String extraLine4 ="			"+'"'+"Latitude"+'"'+": "+cafenea.getLatitude()+",";
-                        String extraLine5 ="			"+'"'+"Longitude"+'"'+": "+cafenea.getLongitude()+",";
-                        String extraLine6 ="			"+'"'+"id"+'"'+": "+'"' +cafenea.getId()+ '"'+",";
-                        String extraLine7 ="			"+'"'+"name"+'"'+": "+'"'+cafenea.getName()+'"';
-                        String extraLine8 ="		}";
-
-
-
-
-                        lines.add(position1, extraLine);
-                        lines.add(position2, extraLine2);
-                        lines.add(position3, extraLine3);
-                        lines.add(position4, extraLine4);
-                        lines.add(position5, extraLine5);
-                        lines.add(position6, extraLine6);
-                        lines.add(position7, extraLine7);
-                        lines.add(position8, extraLine8);
-
-
-
-                        try {
-                            Files.write(path, lines, StandardCharsets.UTF_8);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
                     }
 
                 }
@@ -1361,77 +1350,71 @@ public class HomeFragment extends Fragment implements OnMapReadyCallback, View.O
         public Detalii detalis;
         String ID;
         @RequiresApi(api = Build.VERSION_CODES.O)
-        void json(Cafenea cafenea){
+        void json(Cafenea cafenea) {
 
 
-                    if(!MainActivity.fisierFav){
-                        Log.e("aaaaaaaaaaa","scriere initiala");
-                        scriereJsonFavoriteInit(cafenea);
-                        try {
-                            verificareFavs();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }else if(!MainActivity.jsonFav){
-                        Log.e("aaaaaaaaaaa","scriere cand e gol");
-                        scriereJsonFavoriteInit(cafenea);
-                        try {
-                            verificareFavs();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }else{
-                        Log.e("aaaaaaaaaaa","scriere prin adaugare");
+            if (!MainActivity.fisierFav) {
+                Log.e("aaaaaaaaaaa", "scriere initiala");
+                scriereJsonFavoriteInit(cafenea);
+                try {
+                    verificareFavs();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else if (!MainActivity.jsonFav) {
+                Log.e("aaaaaaaaaaa", "scriere cand e gol");
+                scriereJsonFavoriteInit(cafenea);
+                try {
+                    verificareFavs();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                Log.e("aaaaaaaaaaa", "scriere prin adaugare");
 
-                        Path path = Paths.get(HomeFragment.this.requireContext().getFilesDir() +"/"+MainActivity.fileName1);
-                        List<String> lines = null;
-                        try {
-                            lines = Files.readAllLines(path, StandardCharsets.UTF_8);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        int position1 = lines.size()-2;
-                        int position2 = lines.size()-1;
-                        int position3 = lines.size();
-                        int position4 = lines.size()+1;
-                        int position5 = lines.size()+2;
-                        int position6 = lines.size()+3;
-                        int position7 = lines.size()+4;
-                        int position8 = lines.size()+5;
-
-
+                Path path = Paths.get(HomeFragment.this.requireContext().getFilesDir() + "/" + MainActivity.fileName1);
+                List<String> lines = null;
+                try {
+                    lines = Files.readAllLines(path, StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                int position1 = lines.size() - 2;
+                int position2 = lines.size() - 1;
+                int position3 = lines.size();
+                int position4 = lines.size() + 1;
+                int position5 = lines.size() + 2;
+                int position6 = lines.size() + 3;
+                int position7 = lines.size() + 4;
+                int position8 = lines.size() + 5;
 
 
-
-                        String extraLine = "		,";
-                        String extraLine2 ="		{";
-                        String extraLine3 ="			"+'"'+"Address"+'"'+": "+'"'+cafenea.getAddress()+'"'+",";
-                        String extraLine4 ="			"+'"'+"Latitude"+'"'+": "+cafenea.getLatitude()+",";
-                        String extraLine5 ="			"+'"'+"Longitude"+'"'+": "+cafenea.getLongitude()+",";
-                        String extraLine6 ="			"+'"'+"id"+'"'+": "+'"' +cafenea.getId()+ '"'+",";
-                        String extraLine7 ="			"+'"'+"name"+'"'+": "+'"'+cafenea.getName()+'"';
-                        String extraLine8 ="		}";
-
+                String extraLine = "		,";
+                String extraLine2 = "		{";
+                String extraLine3 = "			" + '"' + "Address" + '"' + ": " + '"' + cafenea.getAddress() + '"' + ",";
+                String extraLine4 = "			" + '"' + "Latitude" + '"' + ": " + cafenea.getLatitude() + ",";
+                String extraLine5 = "			" + '"' + "Longitude" + '"' + ": " + cafenea.getLongitude() + ",";
+                String extraLine6 = "			" + '"' + "id" + '"' + ": " + '"' + cafenea.getId() + '"' + ",";
+                String extraLine7 = "			" + '"' + "name" + '"' + ": " + '"' + cafenea.getName() + '"';
+                String extraLine8 = "		}";
 
 
-
-                        lines.add(position1, extraLine);
-                        lines.add(position2, extraLine2);
-                        lines.add(position3, extraLine3);
-                        lines.add(position4, extraLine4);
-                        lines.add(position5, extraLine5);
-                        lines.add(position6, extraLine6);
-                        lines.add(position7, extraLine7);
-                        lines.add(position8, extraLine8);
-
+                lines.add(position1, extraLine);
+                lines.add(position2, extraLine2);
+                lines.add(position3, extraLine3);
+                lines.add(position4, extraLine4);
+                lines.add(position5, extraLine5);
+                lines.add(position6, extraLine6);
+                lines.add(position7, extraLine7);
+                lines.add(position8, extraLine8);
 
 
-                        try {
-                            Files.write(path, lines, StandardCharsets.UTF_8);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
+                try {
+                    Files.write(path, lines, StandardCharsets.UTF_8);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
 
 
 
